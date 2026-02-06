@@ -9,12 +9,12 @@ app.use(express.urlencoded({ extended: true }));
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 app.get("/", (req, res) => {
-  res.send("Bot live hai 🚀 Gemini 1.0 Pro connected");
+  res.send("Bot live hai 🚀 Gemini-Pro connected");
 });
 
 app.post("/chat", async (req, res) => {
   try {
-    const message = req.body.message || req.query.message;
+    const message = req.body.message;
     const sender = req.body.sender || "unknown";
 
     if (!message) {
@@ -22,7 +22,7 @@ app.post("/chat", async (req, res) => {
     }
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.0-pro",
+      model: "gemini-pro",
       systemInstruction:
         "Tum Shriniwas ho. MITS Gwalior ke student ho. Hinglish me short aur casual reply do."
     });
