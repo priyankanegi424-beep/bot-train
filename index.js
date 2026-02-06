@@ -3,56 +3,47 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const app = express();
 
-// 1. Middlewares: Taaki kisi bhi format ka data (JSON ya URL-encoded) miss na ho
+// Middlewares for parsing data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 2. Gemini Setup
-// Yaad se Render dashboard mein 'GEMINI_API_KEY' set kar dena
+// Gemini Setup using Environment Variable
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// 3. Health Check: Browser mein check karne ke liye (GET request)
+// Health Check for Browser
 app.get('/', (req, res) => {
     res.send("Shriniwas, aapka bot bilkul ready aur online hai! 🚀");
 });
 
-// 4. Main Chat Route: WhatsApp AutoResponder isse call karega
+// Main Chat Route
 app.post('/chat', async (req, res) => {
     try {
-        // Alag-alag apps alag keys bhejti hain, isliye sab cover kiye hain
         const message = req.body.message || req.body.text || req.query.message;
         const sender = req.body.sender || req.query.sender || "Unknown Number";
 
-        console.log(`--- New Message Received ---`);
-        console.log(`From: ${sender}`);
-        console.log(`Content: ${message}`);
+        console.log(`--- New Message ---`);
+        console.log(`From: ${sender} | Content: ${message}`);
 
-        // Validation: Agar message khali hai toh error bhej do
         if (!message || message === "undefined") {
-            console.log("Error: Message is undefined or empty.");
             return res.status(400).json({ error: "Message missing" });
         }
 
-// Is line ko dhyan se update karein
-const model = genAI.getGenerativeModel({ 
-    model: "gemini-1.5-flash", // '-latest' hata diya hai, ye sabse stable hai
-    systemInstruction: "Tum Shriniwas ho. Madhav Institute of Technology & Science (MITS) Gwalior ke student ho. Hinglish me baat karo. Short aur casual replies do."
-});
+        // STABLE MODEL: Switching to gemini-pro to avoid 404 error
+        const model = genAI.getGenerativeModel({ 
+            model: "gemini-pro", 
+            systemInstruction: "Tum Shriniwas ho. Madhav Institute of Technology & Science (MITS) Gwalior ke student ho. Hinglish me baat karo. Short aur casual replies do."
+        });
 
-        // Generate Reply
         const result = await model.generateContent(String(message));
         const response = await result.response;
         const replyText = response.text();
 
         console.log(`AI Reply: ${replyText}`);
-        console.log(`----------------------------`);
 
-        // AutoResponder isi 'reply' key ko read karke WhatsApp pe bhejega
         return res.json({ reply: replyText });
 
     } catch (err) {
-        // Detailed logging taaki hum Render dashboard me exact galti pakad sakein
-        console.error("CRITICAL ERROR IN CHAT ROUTE:", err);
+        console.error("CRITICAL ERROR:", err.message);
         return res.status(500).json({ 
             error: "AI Processing Failed", 
             details: err.message 
@@ -60,8 +51,7 @@ const model = genAI.getGenerativeModel({
     }
 });
 
-// 5. Port Binding: Render ke liye optimized
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
