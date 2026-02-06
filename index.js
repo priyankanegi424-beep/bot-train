@@ -26,4 +26,9 @@ app.post('/chat', async (req, res) => {
     res.json({ reply: "" }); // No reply for others
 });
 
+// Add this at the top with other routes
+app.get('/', (req, res) => {
+    res.send("Shriniwas's AI Bot is Live! 🚀");
+});
+
 app.listen(process.env.PORT || 3000, () => console.log("Server running..."));
