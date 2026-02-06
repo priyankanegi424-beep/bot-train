@@ -2,22 +2,21 @@ const express = require('express');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const app = express();
 
-// SABSE IMPORTANT: Ye line req.body ko parse karne ke liye zaroori hai
+// Ye line sabse upar honi chahiye routes se pehle
 app.use(express.json()); 
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-app.get('/', (req, res) => res.send("Bot is Running!"));
+app.get('/', (req, res) => res.send("Shriniwas's Bot is Running!"));
 
 app.post('/chat', async (req, res) => {
     try {
-        // Destructure safely
         const { message, sender } = req.body;
-        
-        console.log(`Incoming: ${message} from ${sender}`);
+        console.log(`Log - Message: ${message}, Sender: ${sender}`);
 
-        // Validation: Agar message undefined hai toh Gemini call mat karo
-        if (!message) {
+        // Error handling if data is missing
+        if (!message || message === "undefined") {
+            console.log("Error: Message body is empty or undefined");
             return res.status(400).json({ error: "No message received" });
         }
 
@@ -26,16 +25,17 @@ app.post('/chat', async (req, res) => {
             systemInstruction: "Tum Shriniwas ho. Hinglish me baat karo. Short aur casual replies do."
         });
 
-        // Gemini call
-        const result = await model.generateContent(String(message)); // Ensure it's a string
+        const result = await model.generateContent(String(message));
         const response = await result.response;
         
         return res.json({ reply: response.text() });
 
     } catch (err) {
-        console.error("Detailed Error:", err);
-        return res.status(500).json({ error: "Internal Server Error" });
+        console.error("Internal Server Error:", err.message);
+        return res.status(500).json({ error: "AI Processing Failed" });
     }
 });
 
-app.listen(process.env.PORT || 3000, () => console.log("Server running..."));
+// Render port binding
+const PORT = process.env.PORT || 10000; 
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
