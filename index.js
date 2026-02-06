@@ -30,10 +30,10 @@ app.post('/chat', async (req, res) => {
         
         return res.json({ reply: response.text() });
 
-    } catch (err) {
-        console.error("AI Error:", err.message);
-        return res.status(500).json({ error: "AI Failed" });
-    }
+   } catch (err) {
+    console.error("DETAILED AI ERROR:", err); // Ye Render logs me exact issue batayega
+    return res.status(500).json({ error: err.message });
+}
 });
 
 const PORT = process.env.PORT || 10000;
