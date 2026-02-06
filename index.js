@@ -2,27 +2,24 @@ const express = require('express');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const app = express();
 
-// Ye dono middlewares zaroori hain
-app.use(express.json()); 
-app.use(express.urlencoded({ extended: true })); 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
+// Browser test ke liye
+app.get('/', (req, res) => res.send("Shriniwas, bot is online! 🚀"));
+
 app.post('/chat', async (req, res) => {
     try {
-        // AutoResponder alag-alag keys bhej sakta hai, sabko check karo
         const message = req.body.message || req.body.text || req.query.message;
-        const sender = req.body.sender || req.query.sender || "Unknown";
+        const sender = req.body.sender || "Unknown";
 
-        console.log(`Log - Message: ${message}, Sender: ${sender}`);
-
-        if (!message || message === "undefined") {
-            return res.status(400).json({ error: "Empty message" });
-        }
+        if (!message) return res.status(400).json({ error: "No message" });
 
         const model = genAI.getGenerativeModel({ 
             model: "gemini-1.5-flash",
-            systemInstruction: "Tum Shriniwas ho. Hinglish me baat karo. Short aur casual replies do."
+            systemInstruction: "Tum Shriniwas ho. Hinglish me baat karo. Short replies do."
         });
 
         const result = await model.generateContent(String(message));
@@ -30,11 +27,13 @@ app.post('/chat', async (req, res) => {
         
         return res.json({ reply: response.text() });
 
-   } catch (err) {
-    console.error("DETAILED AI ERROR:", err); // Ye Render logs me exact issue batayega
-    return res.status(500).json({ error: err.message });
-}
+    } catch (err) {
+        // EXACT error logs me dekhne ke liye
+        console.error("DEBUG ERROR:", err.message);
+        return res.status(500).json({ error: err.message });
+    }
 });
 
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Render dynamic port binding
+const serverPort = process.env.PORT || 10000;
+app.listen(serverPort, () => console.log(`Active on port ${serverPort}`));
