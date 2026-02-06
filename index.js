@@ -8,22 +8,25 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 app.post('/chat', async (req, res) => {
     const { message, sender } = req.body;
 
-    // Check if it's the specific person
-    if (sender.includes('918580653074')) {
-        try {
-            const model = genAI.getGenerativeModel({ 
-                model: "gemini-1.5-flash",
-                systemInstruction: "Tum Shriniwas ho. Hinglish me baat karo. Short aur casual replies do."
-            });
+    // console.log logic for debugging (Optional)
+    console.log(`Message from ${sender}: ${message}`);
 
-            const result = await model.generateContent(message);
-            const response = await result.response;
-            return res.json({ reply: response.text() });
-        } catch (err) {
-            return res.status(500).json({ error: "AI Error" });
-        }
+    try {
+        const model = genAI.getGenerativeModel({ 
+            model: "gemini-1.5-flash",
+            systemInstruction: "Tum Shriniwas ho. Hinglish me baat karo. Short aur casual replies do."
+        });
+
+        const result = await model.generateContent(message);
+        const response = await result.response;
+        
+        // Ab ye har number ke liye reply bhejega
+        return res.json({ reply: response.text() });
+
+    } catch (err) {
+        console.error("AI Error:", err);
+        return res.status(500).json({ error: "AI Error" });
     }
-    res.json({ reply: "" }); // No reply for others
 });
 
 // Add this at the top with other routes
