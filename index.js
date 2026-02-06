@@ -4,6 +4,7 @@ const app = express();
 
 // Ye line sabse upar honi chahiye routes se pehle
 app.use(express.json()); 
+app.use(express.urlencoded({ extended: true }));
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -11,7 +12,8 @@ app.get('/', (req, res) => res.send("Shriniwas's Bot is Running!"));
 
 app.post('/chat', async (req, res) => {
     try {
-        const { message, sender } = req.body;
+        const message = req.body.message || req.body.text || req.query.message;
+        const sender = req.body.sender || req.query.sender;
         console.log(`Log - Message: ${message}, Sender: ${sender}`);
 
         // Error handling if data is missing
