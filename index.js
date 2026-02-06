@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json());
 
 const API_KEY = process.env.GEMINI_API_KEY;
-
+app.get('/', (req, res) => res.send("Shriniwas, bot is online! 🚀"));
 app.post("/chat", async (req, res) => {
   try {
     const message = req.body.message;
