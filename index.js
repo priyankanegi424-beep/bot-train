@@ -33,8 +33,9 @@ app.post('/chat', async (req, res) => {
             return res.status(400).json({ error: "Message missing" });
         }
 
+// Is line ko update karein
 const model = genAI.getGenerativeModel({ 
-    model: "gemini-1.5-flash", // Ab ye latest library ke saath kaam karega
+    model: "gemini-1.5-flash", 
     systemInstruction: "Tum Shriniwas ho. MITS Gwalior ke student ho. Hinglish me baat karo."
 });
 
