@@ -33,10 +33,8 @@ app.post('/chat', async (req, res) => {
             return res.status(400).json({ error: "Message missing" });
         }
 
-        // Gemini Model Configuration
-// index.js mein model name change karein
 const model = genAI.getGenerativeModel({ 
-    model: "gemini-1.5-flash-latest", // '-latest' add karke dekhein
+    model: "gemini-1.5-flash", // Ab ye latest library ke saath kaam karega
     systemInstruction: "Tum Shriniwas ho. MITS Gwalior ke student ho. Hinglish me baat karo."
 });
 
