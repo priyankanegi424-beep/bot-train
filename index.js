@@ -115,10 +115,13 @@ app.post("/chat", async (req, res) => {
     return res.json({ reply });
 
   } catch (err) {
-    return res.json({
-      reply: "network thoda slow hai 😅 baad me baat karte"
-    });
-  }
+  console.error("GROQ ERROR FULL:", err.response?.data || err.message);
+  return res.json({
+    reply: "debug",
+    error: err.response?.data || err.message
+  });
+}
+
 });
 
 // ================= START =================
