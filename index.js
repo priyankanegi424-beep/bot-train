@@ -34,10 +34,11 @@ app.post('/chat', async (req, res) => {
         }
 
         // Gemini Model Configuration
-        const model = genAI.getGenerativeModel({ 
-            model: "gemini-1.5-flash",
-            systemInstruction: "Tum Shriniwas ho. Madhav Institute of Technology & Science (MITS) Gwalior ke student ho. MERN stack aur Flutter developer ho. Hinglish me baat karo. Replies short, cool aur casual hone chahiye."
-        });
+// index.js mein model name change karein
+const model = genAI.getGenerativeModel({ 
+    model: "gemini-1.5-flash-latest", // '-latest' add karke dekhein
+    systemInstruction: "Tum Shriniwas ho. MITS Gwalior ke student ho. Hinglish me baat karo."
+});
 
         // Generate Reply
         const result = await model.generateContent(String(message));
