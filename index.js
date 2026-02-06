@@ -85,28 +85,29 @@ app.post("/chat", async (req, res) => {
     aiCallsToday++;
 
     const response = await axios.post(
-      "https://api.groq.com/openai/v1/chat/completions",
+  "https://api.groq.com/v1/chat/completions",
+  {
+    model: "llama3-8b-8192",
+    messages: [
       {
-        model: "llama3-8b-8192",
-        messages: [
-          {
-            role: "system",
-            content:
-              "Tum Shriniwas ho. Hinglish me short, casual, friendly replies do."
-          },
-          {
-            role: "user",
-            content: message
-          }
-        ]
+        role: "system",
+        content:
+          "Tum Shriniwas ho. Hinglish me short, casual, friendly replies do."
       },
       {
-        headers: {
-          Authorization: `Bearer ${GROQ_API_KEY}`,
-          "Content-Type": "application/json"
-        }
+        role: "user",
+        content: message
       }
-    );
+    ]
+  },
+  {
+    headers: {
+      "Authorization": `Bearer ${GROQ_API_KEY}`,
+      "Content-Type": "application/json"
+    }
+  }
+);
+
 
     const reply =
       response.data.choices[0].message.content ||
