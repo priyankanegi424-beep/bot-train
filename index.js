@@ -9,7 +9,7 @@ app.post('/chat', async (req, res) => {
     const { message, sender } = req.body;
 
     // Check if it's the specific person
-    if (sender.includes('918580653074')) { // Replace with target number
+    if (sender.includes('918580653074')) {
         try {
             const model = genAI.getGenerativeModel({ 
                 model: "gemini-1.5-flash",
