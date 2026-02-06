@@ -2,24 +2,22 @@ const express = require('express');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const app = express();
 
-// Ye line sabse upar honi chahiye routes se pehle
+// Ye dono middlewares zaroori hain
 app.use(express.json()); 
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true })); 
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-app.get('/', (req, res) => res.send("Shriniwas's Bot is Running!"));
-
 app.post('/chat', async (req, res) => {
     try {
+        // AutoResponder alag-alag keys bhej sakta hai, sabko check karo
         const message = req.body.message || req.body.text || req.query.message;
-        const sender = req.body.sender || req.query.sender;
+        const sender = req.body.sender || req.query.sender || "Unknown";
+
         console.log(`Log - Message: ${message}, Sender: ${sender}`);
 
-        // Error handling if data is missing
         if (!message || message === "undefined") {
-            console.log("Error: Message body is empty or undefined");
-            return res.status(400).json({ error: "No message received" });
+            return res.status(400).json({ error: "Empty message" });
         }
 
         const model = genAI.getGenerativeModel({ 
@@ -33,11 +31,10 @@ app.post('/chat', async (req, res) => {
         return res.json({ reply: response.text() });
 
     } catch (err) {
-        console.error("Internal Server Error:", err.message);
-        return res.status(500).json({ error: "AI Processing Failed" });
+        console.error("AI Error:", err.message);
+        return res.status(500).json({ error: "AI Failed" });
     }
 });
 
-// Render port binding
-const PORT = process.env.PORT || 10000; 
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
